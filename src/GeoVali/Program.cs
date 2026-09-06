@@ -19,6 +19,13 @@ if (autostartSwitch is not null)
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Installed as a global tool, the content root is whatever directory the user launched from, so an
+// appsettings.json shipped beside the DLL is never read — log levels only stick when set here.
+// GeoVali writes its own progress to the run log and prints what the user needs on stdout, so
+// framework logging is only wanted when something is actually wrong. Environment variables still
+// win over this (Logging__LogLevel__Default=Information) when a noisy run is what you want.
+builder.Logging.SetMinimumLevel(LogLevel.Warning);
+
 // Tests point this at a temp folder; normally it is the per-OS application data location.
 var configDirectory = builder.Configuration["GeoVali:ConfigDirectory"] ?? AppPaths.ConfigDirectory;
 Directory.CreateDirectory(configDirectory);
