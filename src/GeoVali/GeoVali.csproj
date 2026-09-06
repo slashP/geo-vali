@@ -14,9 +14,13 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>geovali</ToolCommandName>
     <PackageId>GeoVali</PackageId>
-    <Version>0.1.0</Version>
+    <!-- Release builds get their version from the CI workflow, which derives it
+         from the conventional commits since the last tag. This is only what a
+         local build stamps, so it is deliberately not a real release number. -->
+    <Version>0.0.0-local</Version>
     <Description>Regenerates vali GeoGuessr maps on a schedule and republishes them.</Description>
-    <PackageOutputPath>$(MSBuildThisFileDirectory)../../nupkg</PackageOutputPath>
+    <RepositoryUrl>https://github.com/slashP/geo-vali</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +30,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="wwwroot\**\*" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
