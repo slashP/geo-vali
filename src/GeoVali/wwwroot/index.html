@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GeoVali</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>GeoVali</h1>
+    <div id="header-facts" class="facts"></div>
+  </header>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <!-- First run, screen 1: choose the maps folder. -->
+  <section id="screen-folder" hidden>
+    <h2>Choose your maps folder</h2>
+    <p>Pick the folder that holds your vali map definitions. A folder is a map when it contains
+      <code>map.json</code>.</p>
+    <p id="browse-current" class="path"></p>
+    <ul id="browse-list" class="browse"></ul>
+    <button id="browse-choose" type="button">Use this folder</button>
+  </section>
+
+  <!-- First run, screen 2: paste the cookie. -->
+  <section id="screen-cookie" hidden>
+    <h2>Connect your GeoGuessr account</h2>
+    <div class="two-column">
+      <ol class="walkthrough">
+        <li>Open <a href="https://www.geoguessr.com" target="_blank" rel="noreferrer">geoguessr.com</a> and sign in.</li>
+        <li>Press <kbd>F12</kbd> to open developer tools.</li>
+        <li>Go to <strong>Application</strong>, then <strong>Cookies</strong>, then <strong>geoguessr.com</strong>.</li>
+        <li>Find <code>_ncfa</code> and copy its whole value.</li>
+        <li>Paste it here.</li>
+      </ol>
+      <div>
+        <label for="cookie-input">_ncfa value</label>
+        <textarea id="cookie-input" rows="4" spellcheck="false"></textarea>
+        <button id="cookie-save" type="button">Save and check</button>
+        <p id="cookie-message" class="message"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- The dashboard. -->
+  <section id="screen-dashboard" hidden>
+    <div class="actions">
+      <button id="run-due" type="button">Run all due</button>
+      <button id="run-all" type="button">Run everything</button>
+      <button id="open-settings" type="button" class="secondary">Settings</button>
+    </div>
+
+    <table id="maps">
+      <thead>
+        <tr>
+          <th>Map</th><th>Every</th><th>Last published</th><th>Updates</th><th>Status</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="maps-body"></tbody>
+    </table>
+
+    <h2>Activity</h2>
+    <pre id="live" class="live"></pre>
+  </section>
+
+  <!-- Settings. -->
+  <section id="screen-settings" hidden>
+    <h2>Settings</h2>
+    <label>Default cadence (days)<input id="set-cadence" type="number" min="1"></label>
+    <label>Check interval (minutes)<input id="set-interval" type="number" min="1"></label>
+    <label>Dashboard port<input id="set-port" type="number" min="1024" max="65535"></label>
+    <label class="checkbox"><input id="set-autostart" type="checkbox"> Start at login</label>
+    <p id="autostart-description" class="hint"></p>
+    <label>Maps folder<input id="set-maps-root" type="text"></label>
+    <p id="credential-note" class="hint"></p>
+    <div class="actions">
+      <button id="settings-save" type="button">Save</button>
+      <button id="settings-cookie" type="button" class="secondary">Paste a new cookie</button>
+      <button id="settings-back" type="button" class="secondary">Back</button>
+    </div>
+    <p id="settings-message" class="message"></p>
+  </section>
+
+  <!-- Set up a map that has map.json but no geoguessr.json. -->
+  <dialog id="setup-dialog">
+    <h2 id="setup-title">Set up this map</h2>
+    <div class="tabs">
+      <button id="tab-create" type="button">Create new map</button>
+      <button id="tab-link" type="button">Link existing</button>
+    </div>
+    <div id="pane-create">
+      <label>Name<input id="create-name" type="text"></label>
+      <label>Description<textarea id="create-description" rows="3"></textarea></label>
+      <p class="hint">Write <code>{{LocationCount}}</code> where you want the number of locations.</p>
+    </div>
+    <div id="pane-link" hidden>
+      <label>GeoGuessr map link<input id="link-url" type="text" placeholder="https://www.geoguessr.com/maps/..."></label>
+    </div>
+    <p id="setup-message" class="message"></p>
+    <div class="actions">
+      <button id="setup-save" type="button">Save</button>
+      <button id="setup-cancel" type="button" class="secondary">Cancel</button>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

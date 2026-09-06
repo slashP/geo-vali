@@ -106,7 +106,7 @@ tests/GeoVali.Tests/
 - Consumes: nothing.
 - Produces: `GeoVali.AppInfo.ProductName` (string, `"GeoVali"`), `GeoVali.AppInfo.Version` (string). A buildable app project and a test project that references it. `public partial class Program` so `WebApplicationFactory<Program>` works in Task 14.
 
-- [ ] **Step 1: Create the solution and both projects**
+- [x] **Step 1: Create the solution and both projects**
 
 ```bash
 cd /home/perhel/vali-geoguessr-automation
@@ -119,7 +119,7 @@ dotnet add tests/GeoVali.Tests/GeoVali.Tests.csproj reference src/GeoVali/GeoVal
 
 The `xunit` template may generate xunit v2 or v3 depending on SDK band. Either is fine — every test in this plan uses only `[Fact]`, `[Theory]`, `[InlineData]` and `Assert`, which are identical in both.
 
-- [ ] **Step 2: Replace the app csproj**
+- [x] **Step 2: Replace the app csproj**
 
 `src/GeoVali/GeoVali.csproj`:
 
@@ -146,7 +146,7 @@ The `xunit` template may generate xunit v2 or v3 depending on SDK band. Either i
 </Project>
 ```
 
-- [ ] **Step 3: Write `AppInfo`**
+- [x] **Step 3: Write `AppInfo`**
 
 `src/GeoVali/AppInfo.cs`:
 
@@ -168,7 +168,7 @@ public static class AppInfo
 }
 ```
 
-- [ ] **Step 4: Write the failing test**
+- [x] **Step 4: Write the failing test**
 
 `tests/GeoVali.Tests/AppInfoTests.cs`:
 
@@ -190,12 +190,12 @@ public class AppInfoTests
 }
 ```
 
-- [ ] **Step 5: Run the test and watch it fail**
+- [x] **Step 5: Run the test and watch it fail**
 
 Run: `dotnet test tests/GeoVali.Tests/GeoVali.Tests.csproj`
 Expected: FAIL before Step 3's file exists; after Step 3 it should pass. If you did Step 3 first, delete `AppInfo.cs`, confirm the compile error `The name 'AppInfo' does not exist`, then restore it. The point is to see red before green.
 
-- [ ] **Step 6: Make `Program` testable and minimal**
+- [x] **Step 6: Make `Program` testable and minimal**
 
 `src/GeoVali/Program.cs`:
 
@@ -209,7 +209,7 @@ app.Run();
 public partial class Program;
 ```
 
-- [ ] **Step 7: Verify build, test and pack**
+- [x] **Step 7: Verify build, test and pack**
 
 Run:
 ```bash
@@ -220,7 +220,7 @@ ls nupkg/
 ```
 Expected: build succeeds, the `AppInfo` test passes, and `nupkg/GeoVali.0.1.0.nupkg` exists.
 
-- [ ] **Step 8: Add `.gitattributes` so the fake-vali script in Task 13 keeps LF endings**
+- [x] **Step 8: Add `.gitattributes` so the fake-vali script in Task 13 keeps LF endings**
 
 `.gitattributes`:
 
@@ -230,7 +230,7 @@ Expected: build succeeds, the `AppInfo` test passes, and `nupkg/GeoVali.0.1.0.nu
 *.cmd text eol=crlf
 ```
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add -A
@@ -254,7 +254,7 @@ git commit -m "chore: scaffold GeoVali solution as a .NET global tool"
 
 `nowLocal` is a parameter rather than a call to `DateTime.Now` so the calendar-day boundary is testable. Callers pass `DateTime.Now`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/GeoVali.Tests/CadenceTests.cs`:
 
@@ -337,12 +337,12 @@ public class CadenceTests
 }
 ```
 
-- [ ] **Step 2: Run the tests and verify they fail**
+- [x] **Step 2: Run the tests and verify they fail**
 
 Run: `dotnet test --filter FullyQualifiedName~CadenceTests`
 Expected: FAIL — `The type or namespace name 'Cadence' could not be found`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 `src/GeoVali/Maps/Cadence.cs`:
 
@@ -386,12 +386,12 @@ public static class Cadence
 }
 ```
 
-- [ ] **Step 4: Run the tests and verify they pass**
+- [x] **Step 4: Run the tests and verify they pass**
 
 Run: `dotnet test --filter FullyQualifiedName~CadenceTests`
 Expected: PASS, all 9 test cases.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/GeoVali/Maps/Cadence.cs tests/GeoVali.Tests/CadenceTests.cs
@@ -416,7 +416,7 @@ git commit -m "feat: cadence arithmetic in whole local calendar days"
   - `GeoVali.Maps.MapScanner.Scan(string root)` → `IReadOnlyList<MapFolder>`, ordered by `Directory` ordinal.
   - Test helper `GeoVali.Tests.Support.TempDir` — `IDisposable`, property `Path`, methods `Dir(params string[] segments)` → `string` and `File(string relativePath, string contents)` → `string`.
 
-- [ ] **Step 1: Write the temp-directory test helper**
+- [x] **Step 1: Write the temp-directory test helper**
 
 `tests/GeoVali.Tests/Support/TempDir.cs`:
 
@@ -465,7 +465,7 @@ public sealed class TempDir : IDisposable
 }
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `tests/GeoVali.Tests/MapScannerTests.cs`:
 
@@ -558,12 +558,12 @@ public class MapScannerTests
 }
 ```
 
-- [ ] **Step 3: Run the tests and verify they fail**
+- [x] **Step 3: Run the tests and verify they fail**
 
 Run: `dotnet test --filter FullyQualifiedName~MapScannerTests`
 Expected: FAIL — `The type or namespace name 'MapScanner' could not be found`.
 
-- [ ] **Step 4: Write `MapPaths`**
+- [x] **Step 4: Write `MapPaths`**
 
 `src/GeoVali/Maps/MapPaths.cs`:
 
@@ -596,7 +596,7 @@ public static class MapPaths
 }
 ```
 
-- [ ] **Step 5: Write `MapScanner`**
+- [x] **Step 5: Write `MapScanner`**
 
 `src/GeoVali/Maps/MapScanner.cs`:
 
@@ -641,12 +641,12 @@ public static class MapScanner
 }
 ```
 
-- [ ] **Step 6: Run the tests and verify they pass**
+- [x] **Step 6: Run the tests and verify they pass**
 
 Run: `dotnet test --filter FullyQualifiedName~MapScannerTests`
 Expected: PASS, 6 tests.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/GeoVali/Maps/MapPaths.cs src/GeoVali/Maps/MapScanner.cs \
@@ -677,7 +677,7 @@ git commit -m "feat: discover map folders under the configured root"
 
 Property names are deliberately lowercase-first to match the on-disk files byte for byte. `avatar` is nullable so "generate one if absent" is expressible.
 
-- [ ] **Step 1: Write the failing tests for the token**
+- [x] **Step 1: Write the failing tests for the token**
 
 `tests/GeoVali.Tests/DescriptionTemplateTests.cs`:
 
@@ -726,7 +726,7 @@ public class DescriptionTemplateTests
 }
 ```
 
-- [ ] **Step 2: Write the failing tests for the metadata store**
+- [x] **Step 2: Write the failing tests for the metadata store**
 
 `tests/GeoVali.Tests/MapMetadataStoreTests.cs`:
 
@@ -897,12 +897,12 @@ public class MapMetadataStoreTests
 }
 ```
 
-- [ ] **Step 3: Run the tests and verify they fail**
+- [x] **Step 3: Run the tests and verify they fail**
 
 Run: `dotnet test --filter "FullyQualifiedName~MapMetadataStoreTests|FullyQualifiedName~DescriptionTemplateTests"`
 Expected: FAIL — `MapMetadataStore` / `DescriptionTemplate` do not exist.
 
-- [ ] **Step 4: Write the models**
+- [x] **Step 4: Write the models**
 
 `src/GeoVali/Maps/MapModels.cs`:
 
@@ -968,7 +968,7 @@ public sealed record ValiLocation
 }
 ```
 
-- [ ] **Step 5: Write `DescriptionTemplate`**
+- [x] **Step 5: Write `DescriptionTemplate`**
 
 `src/GeoVali/Maps/DescriptionTemplate.cs`:
 
@@ -992,7 +992,7 @@ public static class DescriptionTemplate
 }
 ```
 
-- [ ] **Step 6: Write `MapMetadataStore`**
+- [x] **Step 6: Write `MapMetadataStore`**
 
 `src/GeoVali/Maps/MapMetadataStore.cs`:
 
@@ -1063,12 +1063,12 @@ public static class MapMetadataStore
 }
 ```
 
-- [ ] **Step 7: Run the tests and verify they pass**
+- [x] **Step 7: Run the tests and verify they pass**
 
 Run: `dotnet test --filter "FullyQualifiedName~MapMetadataStoreTests|FullyQualifiedName~DescriptionTemplateTests"`
 Expected: PASS, 13 tests.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/GeoVali/Maps/MapModels.cs src/GeoVali/Maps/MapMetadataStore.cs \
@@ -1097,7 +1097,7 @@ git commit -m "feat: read and write geoguessr.json and geoguessr.ephemeral.json"
 
 `map-locations.json` for a large map is a bare JSON array of tens of thousands of objects and can exceed 13 MB, so read it from a `FileStream` rather than `File.ReadAllTextAsync`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/GeoVali.Tests/LocationFileTests.cs`:
 
@@ -1214,12 +1214,12 @@ public class MapPublishGuardTests
 }
 ```
 
-- [ ] **Step 2: Run the tests and verify they fail**
+- [x] **Step 2: Run the tests and verify they fail**
 
 Run: `dotnet test --filter "FullyQualifiedName~LocationFileTests|FullyQualifiedName~MapPublishGuardTests"`
 Expected: FAIL — `LocationFile` and `MapPublishGuard` do not exist.
 
-- [ ] **Step 3: Write `MapPublishGuard`**
+- [x] **Step 3: Write `MapPublishGuard`**
 
 `src/GeoVali/Maps/MapPublishGuard.cs`:
 
@@ -1251,7 +1251,7 @@ public static class MapPublishGuard
 }
 ```
 
-- [ ] **Step 4: Write `LocationFile`**
+- [x] **Step 4: Write `LocationFile`**
 
 `src/GeoVali/Maps/LocationFile.cs`:
 
@@ -1297,12 +1297,12 @@ public static class LocationFile
 }
 ```
 
-- [ ] **Step 5: Run the tests and verify they pass**
+- [x] **Step 5: Run the tests and verify they pass**
 
 Run: `dotnet test --filter "FullyQualifiedName~LocationFileTests|FullyQualifiedName~MapPublishGuardTests"`
 Expected: PASS, 10 tests.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/GeoVali/Maps/LocationFile.cs src/GeoVali/Maps/MapPublishGuard.cs \
@@ -1340,7 +1340,7 @@ git commit -m "feat: stream map-locations.json and guard the minimum location co
 
 The read-then-write-incremented-version step is mandatory: the API rejects a stale version, and getting it wrong fails in ways that are hard to diagnose. That is what the first test below pins down.
 
-- [ ] **Step 1: Write the recording HTTP handler**
+- [x] **Step 1: Write the recording HTTP handler**
 
 `tests/GeoVali.Tests/Support/RecordingHandler.cs`:
 
@@ -1384,7 +1384,7 @@ public sealed class RecordingHandler : HttpMessageHandler
 }
 ```
 
-- [ ] **Step 2: Write the failing client tests**
+- [x] **Step 2: Write the failing client tests**
 
 `tests/GeoVali.Tests/GeoguessrClientTests.cs`:
 
@@ -1666,12 +1666,12 @@ public class MapUrlParserTests
 }
 ```
 
-- [ ] **Step 3: Run the tests and verify they fail**
+- [x] **Step 3: Run the tests and verify they fail**
 
 Run: `dotnet test --filter "FullyQualifiedName~GeoguessrClientTests|FullyQualifiedName~MapUrlParserTests"`
 Expected: FAIL — `GeoguessrClient` / `MapUrlParser` do not exist.
 
-- [ ] **Step 4: Write the interface and DTOs**
+- [x] **Step 4: Write the interface and DTOs**
 
 `src/GeoVali/Geoguessr/IGeoguessrClient.cs`:
 
@@ -1712,7 +1712,7 @@ public interface IGeoguessrClient
 }
 ```
 
-- [ ] **Step 5: Write `GeoguessrClient`**
+- [x] **Step 5: Write `GeoguessrClient`**
 
 `src/GeoVali/Geoguessr/GeoguessrClient.cs`:
 
@@ -1883,7 +1883,7 @@ public sealed class GeoguessrClient(HttpClient http) : IGeoguessrClient
 }
 ```
 
-- [ ] **Step 6: Write `AvatarGenerator`**
+- [x] **Step 6: Write `AvatarGenerator`**
 
 The option lists are GeoGuessr's, copied from the author's `GenerateRandomAvatar`.
 
@@ -1925,7 +1925,7 @@ public static class AvatarGenerator
 }
 ```
 
-- [ ] **Step 7: Write `MapUrlParser`**
+- [x] **Step 7: Write `MapUrlParser`**
 
 `src/GeoVali/Geoguessr/MapUrlParser.cs`:
 
@@ -1979,12 +1979,12 @@ public static partial class MapUrlParser
 }
 ```
 
-- [ ] **Step 8: Run the tests and verify they pass**
+- [x] **Step 8: Run the tests and verify they pass**
 
 Run: `dotnet test --filter "FullyQualifiedName~GeoguessrClientTests|FullyQualifiedName~MapUrlParserTests"`
 Expected: PASS, 24 tests.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add src/GeoVali/Geoguessr tests/GeoVali.Tests/GeoguessrClientTests.cs \
@@ -2006,7 +2006,7 @@ git commit -m "feat: GeoGuessr publish sequence with the mandatory version incre
 
 Two rules that matter and are easy to get wrong: retry only what is safe to repeat (never `POST`, which would create a duplicate draft), and never retry a `401` — that is a whole-run abort, not a blip.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/GeoVali.Tests/TransientRetryHandlerTests.cs`:
 
@@ -2120,12 +2120,12 @@ public class TransientRetryHandlerTests
 }
 ```
 
-- [ ] **Step 2: Run the tests and verify they fail**
+- [x] **Step 2: Run the tests and verify they fail**
 
 Run: `dotnet test --filter FullyQualifiedName~TransientRetryHandlerTests`
 Expected: FAIL — `TransientRetryHandler` does not exist.
 
-- [ ] **Step 3: Write the handler**
+- [x] **Step 3: Write the handler**
 
 `src/GeoVali/Geoguessr/TransientRetryHandler.cs`:
 
@@ -2196,14 +2196,14 @@ public sealed class TransientRetryHandler(Func<TimeSpan, CancellationToken, Task
 }
 ```
 
-- [ ] **Step 4: Run the tests and verify they pass**
+- [x] **Step 4: Run the tests and verify they pass**
 
 Run: `dotnet test --filter FullyQualifiedName~TransientRetryHandlerTests`
 Expected: PASS, 8 tests.
 
 Note: `HttpRequestMessage` cannot be sent twice when it carries a stream body. Every GeoVali request body is created from an in-memory object by `PutAsJsonAsync`, whose content is buffered and re-readable, so replay is safe. Do not add streaming request bodies without revisiting this.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/GeoVali/Geoguessr/TransientRetryHandler.cs tests/GeoVali.Tests/TransientRetryHandlerTests.cs
@@ -2234,7 +2234,7 @@ git commit -m "feat: bounded retry with backoff on transient GeoGuessr failures"
 
 vali prints ANSI colour codes — its banner is blue, its "Download/data folder" line green. Those must be stripped before the text reaches the dashboard, or the user sees escape gibberish. In the tests below the escape byte is written as the C# escape `\u001b` rather than pasted literally.
 
-- [ ] **Step 1: Write the fake vali executable helper**
+- [x] **Step 1: Write the fake vali executable helper**
 
 `tests/GeoVali.Tests/Support/FakeValiExecutable.cs`:
 
@@ -2286,7 +2286,7 @@ public static class FakeValiExecutable
 }
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `tests/GeoVali.Tests/ValiRunnerTests.cs`:
 
@@ -2393,12 +2393,12 @@ public class ValiRunnerTests
 }
 ```
 
-- [ ] **Step 3: Run the tests and verify they fail**
+- [x] **Step 3: Run the tests and verify they fail**
 
 Run: `dotnet test --filter FullyQualifiedName~ValiRunnerTests`
 Expected: FAIL — `The type or namespace name 'ValiRunner' could not be found`.
 
-- [ ] **Step 4: Write the interface**
+- [x] **Step 4: Write the interface**
 
 `src/GeoVali/Vali/IValiRunner.cs`:
 
@@ -2424,7 +2424,7 @@ public interface IValiRunner
 }
 ```
 
-- [ ] **Step 5: Write `ValiRunner`**
+- [x] **Step 5: Write `ValiRunner`**
 
 `src/GeoVali/Vali/ValiRunner.cs`:
 
@@ -2545,12 +2545,12 @@ public sealed partial class ValiRunner(string? executableOverride = null) : IVal
 }
 ```
 
-- [ ] **Step 6: Run the tests and verify they pass**
+- [x] **Step 6: Run the tests and verify they pass**
 
 Run: `dotnet test --filter FullyQualifiedName~ValiRunnerTests`
 Expected: PASS, 11 test cases.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/GeoVali/Vali tests/GeoVali.Tests/ValiRunnerTests.cs tests/GeoVali.Tests/Support/FakeValiExecutable.cs
@@ -2581,7 +2581,7 @@ git commit -m "feat: invoke vali generate and stream its output"
   - `GeoVali.Configuration.CredentialProtectorFactory.Create()` → `ICredentialProtector`.
   - `GeoVali.Configuration.CredentialStore` — `public CredentialStore(string directory, ICredentialProtector protector)`, `string? ReadCookie()`, `void WriteCookie(string cookie)`, `void Clear()`, `const string FileName = "credentials.json"`.
 
-- [ ] **Step 1: Add the DPAPI package**
+- [x] **Step 1: Add the DPAPI package**
 
 ```bash
 dotnet add src/GeoVali/GeoVali.csproj package System.Security.Cryptography.ProtectedData
@@ -2589,7 +2589,7 @@ dotnet add src/GeoVali/GeoVali.csproj package System.Security.Cryptography.Prote
 
 The package is cross-platform to reference; its functionality is Windows-only, which is exactly why the Unix path uses file permissions instead.
 
-- [ ] **Step 2: Write the failing config tests**
+- [x] **Step 2: Write the failing config tests**
 
 `tests/GeoVali.Tests/ConfigStoreTests.cs`:
 
@@ -2686,7 +2686,7 @@ public class ConfigStoreTests
 }
 ```
 
-- [ ] **Step 3: Write the failing credential tests**
+- [x] **Step 3: Write the failing credential tests**
 
 `tests/GeoVali.Tests/CredentialStoreTests.cs`:
 
@@ -2789,12 +2789,12 @@ public class CredentialStoreTests
 }
 ```
 
-- [ ] **Step 4: Run the tests and verify they fail**
+- [x] **Step 4: Run the tests and verify they fail**
 
 Run: `dotnet test --filter "FullyQualifiedName~ConfigStoreTests|FullyQualifiedName~CredentialStoreTests"`
 Expected: FAIL — `AppPaths`, `ConfigStore`, `CredentialStore` do not exist.
 
-- [ ] **Step 5: Write `AppPaths`**
+- [x] **Step 5: Write `AppPaths`**
 
 `src/GeoVali/Configuration/AppPaths.cs`:
 
@@ -2838,7 +2838,7 @@ public static class AppPaths
 }
 ```
 
-- [ ] **Step 6: Write `AppConfig` and `ConfigStore`**
+- [x] **Step 6: Write `AppConfig` and `ConfigStore`**
 
 `src/GeoVali/Configuration/AppConfig.cs`:
 
@@ -2916,7 +2916,7 @@ public sealed class ConfigStore(string directory)
 }
 ```
 
-- [ ] **Step 7: Write the protector and the credential store**
+- [x] **Step 7: Write the protector and the credential store**
 
 `src/GeoVali/Configuration/ICredentialProtector.cs`:
 
@@ -3047,12 +3047,12 @@ public sealed class CredentialStore(string directory, ICredentialProtector prote
 }
 ```
 
-- [ ] **Step 8: Run the tests and verify they pass**
+- [x] **Step 8: Run the tests and verify they pass**
 
 Run: `dotnet test --filter "FullyQualifiedName~ConfigStoreTests|FullyQualifiedName~CredentialStoreTests"`
 Expected: PASS, 13 tests.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add src/GeoVali/Configuration src/GeoVali/GeoVali.csproj \
@@ -3079,7 +3079,7 @@ git commit -m "feat: platform config directory and a separately protected cookie
 
 `cookieProvider` is how the "never logs the cookie" rule is enforced mechanically rather than by discipline: every message passes through a redaction step before it reaches the file, the buffer or the dashboard.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/GeoVali.Tests/RunLogTests.cs`:
 
@@ -3199,12 +3199,12 @@ public class RunLogTests
 }
 ```
 
-- [ ] **Step 2: Run the tests and verify they fail**
+- [x] **Step 2: Run the tests and verify they fail**
 
 Run: `dotnet test --filter FullyQualifiedName~RunLogTests`
 Expected: FAIL — `RunLog` does not exist.
 
-- [ ] **Step 3: Write `RunLog`**
+- [x] **Step 3: Write `RunLog`**
 
 `src/GeoVali/Running/RunLog.cs`:
 
@@ -3305,14 +3305,14 @@ public sealed class RunLog(string logDirectory, Func<string?> cookieProvider)
 }
 ```
 
-- [ ] **Step 4: Run the tests and verify they pass**
+- [x] **Step 4: Run the tests and verify they pass**
 
 Run: `dotnet test --filter FullyQualifiedName~RunLogTests`
 Expected: PASS, 7 tests.
 
 If `Lock` is unavailable, use `private readonly object _gate = new();` — behaviour is identical.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/GeoVali/Running/RunLog.cs tests/GeoVali.Tests/RunLogTests.cs
@@ -3341,7 +3341,7 @@ git commit -m "feat: run log with rolling file, ring buffer and cookie redaction
 
 The ordering that matters most: auth is checked **before** any generation. Generation across a folder takes tens of minutes and a stale cookie is the most likely failure, so discovering it after regenerating everything must be structurally impossible.
 
-- [ ] **Step 1: Write the two fakes**
+- [x] **Step 1: Write the two fakes**
 
 `tests/GeoVali.Tests/Support/FakeValiRunner.cs`:
 
@@ -3438,7 +3438,7 @@ public sealed class FakeGeoguessrClient : IGeoguessrClient
 }
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `tests/GeoVali.Tests/UpdateRunnerTests.cs`:
 
@@ -3854,12 +3854,12 @@ public class UpdateRunnerTests
 }
 ```
 
-- [ ] **Step 3: Run the tests and verify they fail**
+- [x] **Step 3: Run the tests and verify they fail**
 
 Run: `dotnet test --filter FullyQualifiedName~UpdateRunnerTests`
 Expected: FAIL — `UpdateRunner` does not exist.
 
-- [ ] **Step 4: Write the run models**
+- [x] **Step 4: Write the run models**
 
 `src/GeoVali/Running/RunModels.cs`:
 
@@ -3889,7 +3889,7 @@ public sealed record RunResult(
     IReadOnlyList<MapRunOutcome> maps);
 ```
 
-- [ ] **Step 5: Write `UpdateRunner`**
+- [x] **Step 5: Write `UpdateRunner`**
 
 `src/GeoVali/Running/UpdateRunner.cs`:
 
@@ -4068,17 +4068,17 @@ public sealed class UpdateRunner(
 }
 ```
 
-- [ ] **Step 6: Run the tests and verify they pass**
+- [x] **Step 6: Run the tests and verify they pass**
 
 Run: `dotnet test --filter FullyQualifiedName~UpdateRunnerTests`
 Expected: PASS, 22 tests.
 
-- [ ] **Step 7: Run the whole suite**
+- [x] **Step 7: Run the whole suite**
 
 Run: `dotnet test`
 Expected: PASS, everything green.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/GeoVali/Running tests/GeoVali.Tests/UpdateRunnerTests.cs \
@@ -4106,7 +4106,7 @@ git commit -m "feat: run loop with preflight, per-map isolation and stamp-only-o
 
 A single run-lock means a manual "Run now" during an active run **joins** the in-flight run rather than starting a second. That is the whole rule: never two vali processes at once.
 
-- [ ] **Step 1: Make the fake vali runner overridable**
+- [x] **Step 1: Make the fake vali runner overridable**
 
 `RunCoordinator` needs a vali stand-in that can block mid-run, so the fake from Task 11 must be
 subclassable. Change two words in `tests/GeoVali.Tests/Support/FakeValiRunner.cs`:
@@ -4124,7 +4124,7 @@ public class FakeValiRunner : IValiRunner                       // was: public s
 }
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `tests/GeoVali.Tests/RunCoordinatorTests.cs`:
 
@@ -4261,12 +4261,12 @@ public class RunCoordinatorTests
 }
 ```
 
-- [ ] **Step 3: Run the tests and verify they fail**
+- [x] **Step 3: Run the tests and verify they fail**
 
 Run: `dotnet test --filter FullyQualifiedName~RunCoordinatorTests`
 Expected: FAIL — `The type or namespace name 'RunCoordinator' could not be found`.
 
-- [ ] **Step 4: Write `RunCoordinator`**
+- [x] **Step 4: Write `RunCoordinator`**
 
 `src/GeoVali/Running/RunCoordinator.cs`:
 
@@ -4339,7 +4339,7 @@ public sealed class RunCoordinator(UpdateRunner runner, RunLog log)
 }
 ```
 
-- [ ] **Step 5: Write `Scheduler`**
+- [x] **Step 5: Write `Scheduler`**
 
 `src/GeoVali/Running/Scheduler.cs`:
 
@@ -4391,12 +4391,12 @@ public sealed class Scheduler(RunCoordinator coordinator, ConfigStore config, Ru
 }
 ```
 
-- [ ] **Step 6: Run the tests and verify they pass**
+- [x] **Step 6: Run the tests and verify they pass**
 
 Run: `dotnet test --filter FullyQualifiedName~RunCoordinatorTests`
 Expected: PASS, 5 tests.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/GeoVali/Running/RunCoordinator.cs src/GeoVali/Running/Scheduler.cs \
@@ -4419,7 +4419,7 @@ git commit -m "feat: background scheduler with a single run lock"
 
 This is the one test that runs the real `ValiRunner` against a real child process and the real `GeoguessrClient` against a real socket. Everything between them is production code.
 
-- [ ] **Step 1: Let the test project host a web server**
+- [x] **Step 1: Let the test project host a web server**
 
 The stub server builds a real `WebApplication`, so the test project needs the ASP.NET Core shared
 framework. Add to `tests/GeoVali.Tests/GeoVali.Tests.csproj`:
@@ -4430,7 +4430,7 @@ framework. Add to `tests/GeoVali.Tests/GeoVali.Tests.csproj`:
   </ItemGroup>
 ```
 
-- [ ] **Step 2: Write the stub server**
+- [x] **Step 2: Write the stub server**
 
 `tests/GeoVali.Tests/Support/StubGeoguessrServer.cs`:
 
@@ -4526,7 +4526,7 @@ public sealed class StubGeoguessrServer : IAsyncDisposable
 }
 ```
 
-- [ ] **Step 3: Write the failing end-to-end tests**
+- [x] **Step 3: Write the failing end-to-end tests**
 
 `tests/GeoVali.Tests/EndToEndRunTests.cs`:
 
@@ -4722,17 +4722,17 @@ public class EndToEndRunTests
 }
 ```
 
-- [ ] **Step 4: Run the tests and verify they fail**
+- [x] **Step 4: Run the tests and verify they fail**
 
 Run: `dotnet test --filter FullyQualifiedName~EndToEndRunTests`
 Expected: FAIL — `StubGeoguessrServer` does not exist until Step 2 compiles; after that all six should pass. If any fail for a real reason, fix the production code rather than the test.
 
-- [ ] **Step 5: Run the whole suite**
+- [x] **Step 5: Run the whole suite**
 
 Run: `dotnet test`
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add tests/GeoVali.Tests/EndToEndRunTests.cs tests/GeoVali.Tests/Support/StubGeoguessrServer.cs \
@@ -4766,13 +4766,13 @@ git commit -m "test: end-to-end run against a fake vali executable and a stub se
 
 Two security decisions live here. The server binds to loopback only, and every mutating endpoint requires the `X-GeoVali: 1` header — a browser cannot send a custom header cross-origin without a preflight, and no CORS headers are emitted, so a malicious page the user happens to have open cannot drive the tool.
 
-- [ ] **Step 1: Add the integration-testing package**
+- [x] **Step 1: Add the integration-testing package**
 
 ```bash
 dotnet add tests/GeoVali.Tests/GeoVali.Tests.csproj package Microsoft.AspNetCore.Mvc.Testing
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `tests/GeoVali.Tests/ApiEndpointTests.cs`:
 
@@ -5017,12 +5017,12 @@ public class ApiEndpointTests : IDisposable
 }
 ```
 
-- [ ] **Step 3: Run the tests and verify they fail**
+- [x] **Step 3: Run the tests and verify they fail**
 
 Run: `dotnet test --filter FullyQualifiedName~ApiEndpointTests`
 Expected: FAIL — the endpoints do not exist.
 
-- [ ] **Step 4: Write the API models**
+- [x] **Step 4: Write the API models**
 
 `src/GeoVali/Web/ApiModels.cs`:
 
@@ -5054,7 +5054,7 @@ public sealed record MapRow(
     bool due);
 ```
 
-- [ ] **Step 5: Write the local-only middleware**
+- [x] **Step 5: Write the local-only middleware**
 
 `src/GeoVali/Web/LocalOnlyMiddleware.cs`:
 
@@ -5096,7 +5096,7 @@ public static class LocalOnlyMiddleware
 }
 ```
 
-- [ ] **Step 6: Write the status and maps endpoints**
+- [x] **Step 6: Write the status and maps endpoints**
 
 `src/GeoVali/Web/ApiEndpoints.cs`:
 
@@ -5189,7 +5189,7 @@ public static class ApiEndpoints
 }
 ```
 
-- [ ] **Step 7: Wire the host**
+- [x] **Step 7: Wire the host**
 
 `src/GeoVali/Program.cs`:
 
@@ -5307,12 +5307,12 @@ public sealed class CookieHandler(CredentialStore credentials) : DelegatingHandl
 ```
 
 
-- [ ] **Step 8: Run the tests and verify they pass**
+- [x] **Step 8: Run the tests and verify they pass**
 
 Run: `dotnet test --filter FullyQualifiedName~ApiEndpointTests`
 Expected: PASS, 10 tests.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add src/GeoVali/Program.cs src/GeoVali/Web tests/GeoVali.Tests/ApiEndpointTests.cs \
@@ -5337,7 +5337,7 @@ git commit -m "feat: local-only web host with status and maps endpoints"
   - `GeoVali.Web.RunRequestBody` — `sealed record RunRequestBody(string scope, string? directory)`.
   - `UpdateRunner` gains an optional `Action<string?>? onMapChanged` constructor parameter (last, defaulted to null), invoked with the map name before each map and null at the end.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `tests/GeoVali.Tests/ApiEndpointTests.cs`:
 
@@ -5458,12 +5458,12 @@ Append to `tests/GeoVali.Tests/ApiEndpointTests.cs`:
     }
 ```
 
-- [ ] **Step 2: Run the tests and verify they fail**
+- [x] **Step 2: Run the tests and verify they fail**
 
 Run: `dotnet test --filter FullyQualifiedName~ApiEndpointTests`
 Expected: FAIL — `/api/run` returns 404.
 
-- [ ] **Step 3: Let `UpdateRunner` report the current map**
+- [x] **Step 3: Let `UpdateRunner` report the current map**
 
 In `src/GeoVali/Running/UpdateRunner.cs`, add a final defaulted constructor parameter:
 
@@ -5518,7 +5518,7 @@ always cleared, however the loop exits, and announce each map at the top of the 
         }
 ```
 
-- [ ] **Step 4: Wire the callback in `ServiceRegistration`**
+- [x] **Step 4: Wire the callback in `ServiceRegistration`**
 
 `RunCoordinator` is constructed after `UpdateRunner`, so pass a closure that resolves it lazily:
 
@@ -5533,7 +5533,7 @@ always cleared, however the loop exits, and announce each map at the top of the 
             name => provider.GetRequiredService<RunCoordinator>().CurrentMapName = name));
 ```
 
-- [ ] **Step 5: Write the run endpoint**
+- [x] **Step 5: Write the run endpoint**
 
 Add to `MapGeoValiApi` in `src/GeoVali/Web/ApiEndpoints.cs`:
 
@@ -5591,7 +5591,7 @@ and the request body record in `src/GeoVali/Web/ApiModels.cs`:
 public sealed record RunRequestBody(string? scope, string? directory);
 ```
 
-- [ ] **Step 6: Write the Server-Sent Events endpoint**
+- [x] **Step 6: Write the Server-Sent Events endpoint**
 
 Add to `MapGeoValiApi`:
 
@@ -5643,12 +5643,12 @@ Add to `MapGeoValiApi`:
         });
 ```
 
-- [ ] **Step 7: Run the tests and verify they pass**
+- [x] **Step 7: Run the tests and verify they pass**
 
 Run: `dotnet test --filter FullyQualifiedName~ApiEndpointTests`
 Expected: PASS, 17 tests.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/GeoVali/Web src/GeoVali/Running/UpdateRunner.cs tests/GeoVali.Tests/ApiEndpointTests.cs
@@ -5679,7 +5679,7 @@ git commit -m "feat: run endpoints and live progress over server-sent events"
 
 A browser cannot open a native directory dialog for a server, but the server is local, so GeoVali renders its own folder browser. Showing which directories actually contain maps is the point — it saves a non-developer from typing an absolute path and confirms the folder is the right one.
 
-- [ ] **Step 1: Write the failing folder-browser tests**
+- [x] **Step 1: Write the failing folder-browser tests**
 
 `tests/GeoVali.Tests/FolderBrowserTests.cs`:
 
@@ -5775,7 +5775,7 @@ public class FolderBrowserTests
 }
 ```
 
-- [ ] **Step 2: Write the failing setup-endpoint tests**
+- [x] **Step 2: Write the failing setup-endpoint tests**
 
 Append to `tests/GeoVali.Tests/ApiEndpointTests.cs`:
 
@@ -5870,12 +5870,12 @@ Append to `tests/GeoVali.Tests/ApiEndpointTests.cs`:
     }
 ```
 
-- [ ] **Step 3: Run the tests and verify they fail**
+- [x] **Step 3: Run the tests and verify they fail**
 
 Run: `dotnet test --filter "FullyQualifiedName~FolderBrowserTests|FullyQualifiedName~ApiEndpointTests"`
 Expected: FAIL — `FolderBrowser` does not exist and the setup endpoints return 404.
 
-- [ ] **Step 4: Write `FolderBrowser`**
+- [x] **Step 4: Write `FolderBrowser`**
 
 `src/GeoVali/Web/FolderBrowser.cs`:
 
@@ -5976,7 +5976,7 @@ public static class FolderBrowser
 children of one directory at a time, both of which the user triggers deliberately; the dashboard
 shows a spinner while the request is in flight.
 
-- [ ] **Step 5: Write the setup endpoints**
+- [x] **Step 5: Write the setup endpoints**
 
 Add to `MapGeoValiApi` in `src/GeoVali/Web/ApiEndpoints.cs`:
 
@@ -6057,12 +6057,12 @@ public sealed record FolderBody(string? path);
 public sealed record CookieBody(string? cookie);
 ```
 
-- [ ] **Step 6: Run the tests and verify they pass**
+- [x] **Step 6: Run the tests and verify they pass**
 
 Run: `dotnet test --filter "FullyQualifiedName~FolderBrowserTests|FullyQualifiedName~ApiEndpointTests"`
 Expected: PASS, 31 tests.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/GeoVali/Web tests/GeoVali.Tests/FolderBrowserTests.cs tests/GeoVali.Tests/ApiEndpointTests.cs
@@ -6088,7 +6088,7 @@ git commit -m "feat: folder picker and cookie validation for first run"
 
 Linking reuses `GET /api/v4/user-maps/drafts/{id}`, a call already in the publish path: a success proves the signed-in user owns the draft and yields the current name to seed `geoguessr.json`. It costs nothing extra.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `tests/GeoVali.Tests/ApiEndpointTests.cs`:
 
@@ -6229,12 +6229,12 @@ Append to `tests/GeoVali.Tests/ApiEndpointTests.cs`:
     }
 ```
 
-- [ ] **Step 2: Run the tests and verify they fail**
+- [x] **Step 2: Run the tests and verify they fail**
 
 Run: `dotnet test --filter FullyQualifiedName~ApiEndpointTests`
 Expected: FAIL — `/api/maps/create` and `/api/maps/link` return 404.
 
-- [ ] **Step 3: Write the endpoints**
+- [x] **Step 3: Write the endpoints**
 
 Add to `MapGeoValiApi` in `src/GeoVali/Web/ApiEndpoints.cs`:
 
@@ -6362,12 +6362,12 @@ public sealed record CreateMapBody(string? directory, string? name, string? desc
 public sealed record LinkMapBody(string? directory, string? url);
 ```
 
-- [ ] **Step 4: Run the tests and verify they pass**
+- [x] **Step 4: Run the tests and verify they pass**
 
 Run: `dotnet test --filter FullyQualifiedName~ApiEndpointTests`
 Expected: PASS, 38 tests.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/GeoVali/Web tests/GeoVali.Tests/ApiEndpointTests.cs
@@ -6400,7 +6400,7 @@ git commit -m "feat: create a new map or link an existing one from the dashboard
 
 `stateDirectory` is a constructor parameter rather than a hard-coded per-OS path so the tests write into a temp folder instead of the real Startup folder or LaunchAgents.
 
-- [ ] **Step 1: Write the failing autostart tests**
+- [x] **Step 1: Write the failing autostart tests**
 
 `tests/GeoVali.Tests/AutostartTests.cs`:
 
@@ -6534,7 +6534,7 @@ public class AutostartTests
 }
 ```
 
-- [ ] **Step 2: Write the failing settings-endpoint tests**
+- [x] **Step 2: Write the failing settings-endpoint tests**
 
 Append to `tests/GeoVali.Tests/ApiEndpointTests.cs`:
 
@@ -6633,12 +6633,12 @@ Append to `tests/GeoVali.Tests/ApiEndpointTests.cs`:
     }
 ```
 
-- [ ] **Step 3: Run the tests and verify they fail**
+- [x] **Step 3: Run the tests and verify they fail**
 
 Run: `dotnet test --filter "FullyQualifiedName~AutostartTests|FullyQualifiedName~ApiEndpointTests"`
 Expected: FAIL — the autostart types and settings endpoints do not exist.
 
-- [ ] **Step 4: Write the autostart interface and implementations**
+- [x] **Step 4: Write the autostart interface and implementations**
 
 `src/GeoVali/Autostart/IAutostart.cs`:
 
@@ -6828,7 +6828,7 @@ public static class AutostartFactory
 }
 ```
 
-- [ ] **Step 5: Register autostart**
+- [x] **Step 5: Register autostart**
 
 Add to `AddGeoVali` in `src/GeoVali/Web/ServiceRegistration.cs`, before `return services;`:
 
@@ -6840,7 +6840,7 @@ Add to `AddGeoVali` in `src/GeoVali/Web/ServiceRegistration.cs`, before `return 
 
 with `using GeoVali.Autostart;` at the top.
 
-- [ ] **Step 6: Write the settings endpoints**
+- [x] **Step 6: Write the settings endpoints**
 
 Add `using GeoVali.Autostart;` to the top of `src/GeoVali/Web/ApiEndpoints.cs`, then add to
 `MapGeoValiApi`:
@@ -6936,14 +6936,14 @@ public sealed record SettingsBody(
     bool? startAtLogin);
 ```
 
-- [ ] **Step 7: Run the tests and verify they pass**
+- [x] **Step 7: Run the tests and verify they pass**
 
 Run: `dotnet test --filter "FullyQualifiedName~AutostartTests|FullyQualifiedName~ApiEndpointTests"`
 Expected: PASS, 53 tests.
 
 Note: the settings endpoint tests resolve the real `IAutostart`. Nothing in them flips `startAtLogin`, so no unit or shortcut is written to the developer's machine. Do not add a test that posts `startAtLogin = true` through the HTTP layer — cover that through `AutostartTests` with a temp directory instead.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/GeoVali/Autostart src/GeoVali/Web tests/GeoVali.Tests/AutostartTests.cs \
@@ -6969,7 +6969,7 @@ git commit -m "feat: start at login per OS and the settings endpoints"
 
 The page is static HTML with vanilla JavaScript, served from resources embedded in the assembly. No build step keeps the global tool a single package with no npm, and the page can be opened and read directly.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `tests/GeoVali.Tests/ApiEndpointTests.cs`:
 
@@ -6998,12 +6998,12 @@ Append to `tests/GeoVali.Tests/ApiEndpointTests.cs`:
     }
 ```
 
-- [ ] **Step 2: Run the test and verify it fails**
+- [x] **Step 2: Run the test and verify it fails**
 
 Run: `dotnet test --filter FullyQualifiedName~The_dashboard`
 Expected: FAIL — 404.
 
-- [ ] **Step 3: Embed wwwroot in the assembly**
+- [x] **Step 3: Embed wwwroot in the assembly**
 
 ```bash
 dotnet add src/GeoVali/GeoVali.csproj package Microsoft.Extensions.FileProviders.Embedded
@@ -7021,7 +7021,7 @@ Add to `src/GeoVali/GeoVali.csproj`:
   </ItemGroup>
 ```
 
-- [ ] **Step 4: Serve the embedded files**
+- [x] **Step 4: Serve the embedded files**
 
 In `src/GeoVali/Program.cs`, between `app.UseLocalOnly();` and `app.MapGeoValiApi();`:
 
@@ -7033,7 +7033,7 @@ app.UseDefaultFiles(new DefaultFilesOptions { FileProvider = embedded });
 app.UseStaticFiles(new StaticFileOptions { FileProvider = embedded });
 ```
 
-- [ ] **Step 5: Write the page**
+- [x] **Step 5: Write the page**
 
 `src/GeoVali/wwwroot/index.html`:
 
@@ -7614,12 +7614,12 @@ setInterval(() => {
 }, 5000);
 ```
 
-- [ ] **Step 6: Run the tests and verify they pass**
+- [x] **Step 6: Run the tests and verify they pass**
 
 Run: `dotnet test --filter FullyQualifiedName~ApiEndpointTests`
 Expected: PASS, 55 tests.
 
-- [ ] **Step 7: See it in a browser**
+- [x] **Step 7: See it in a browser**
 
 ```bash
 dotnet run --project src/GeoVali
@@ -7630,7 +7630,7 @@ one advances to the cookie screen; the cookie walkthrough is legible; the dashbo
 a folder without `geoguessr.json` shows "not set up yet" with a **Set up** button. Stop with
 <kbd>Ctrl</kbd>+<kbd>C</kbd>.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/GeoVali/wwwroot src/GeoVali/GeoVali.csproj src/GeoVali/Program.cs \
@@ -7656,7 +7656,7 @@ git commit -m "feat: embedded dashboard with first-run screens and live progress
   - `GeoVali.Startup.BrowserLauncher.Open(string url)` → `void`.
   - `geovali --no-browser` suppresses opening a browser (used by the autostart units from Task 18).
 
-- [ ] **Step 1: Write the failing port tests**
+- [x] **Step 1: Write the failing port tests**
 
 `tests/GeoVali.Tests/PortPickerTests.cs`:
 
@@ -7730,12 +7730,12 @@ public class PortPickerTests
 }
 ```
 
-- [ ] **Step 2: Run the tests and verify they fail**
+- [x] **Step 2: Run the tests and verify they fail**
 
 Run: `dotnet test --filter FullyQualifiedName~PortPickerTests`
 Expected: FAIL — `PortPicker` does not exist.
 
-- [ ] **Step 3: Write `PortPicker`**
+- [x] **Step 3: Write `PortPicker`**
 
 `src/GeoVali/Startup/PortPicker.cs`:
 
@@ -7783,7 +7783,7 @@ public static class PortPicker
 }
 ```
 
-- [ ] **Step 4: Write `BrowserLauncher`**
+- [x] **Step 4: Write `BrowserLauncher`**
 
 `src/GeoVali/Startup/BrowserLauncher.cs`:
 
@@ -7819,7 +7819,7 @@ public static class BrowserLauncher
 }
 ```
 
-- [ ] **Step 5: Finish `Program.cs`**
+- [x] **Step 5: Finish `Program.cs`**
 
 `src/GeoVali/Program.cs`:
 
@@ -7879,7 +7879,7 @@ app.Run();
 public partial class Program;
 ```
 
-- [ ] **Step 6: Write the README**
+- [x] **Step 6: Write the README**
 
 `README.md`:
 
@@ -7995,12 +7995,12 @@ a systemd user unit on Linux. On Linux, activate it with `systemctl --user enabl
 - Browse your existing GeoGuessr maps. Paste a map's link to connect it to a folder.
 ````
 
-- [ ] **Step 7: Run the whole suite**
+- [x] **Step 7: Run the whole suite**
 
 Run: `dotnet test`
 Expected: PASS, everything green.
 
-- [ ] **Step 8: Verify the packaged tool actually installs and runs**
+- [x] **Step 8: Verify the packaged tool actually installs and runs**
 
 ```bash
 dotnet pack src/GeoVali/GeoVali.csproj -c Release
@@ -8015,7 +8015,7 @@ at that address. Stop it with Ctrl+C and uninstall the test copy:
 dotnet tool uninstall -g GeoVali
 ```
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add src/GeoVali/Startup src/GeoVali/Program.cs README.md tests/GeoVali.Tests/PortPickerTests.cs
