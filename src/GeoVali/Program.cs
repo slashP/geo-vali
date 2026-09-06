@@ -1,10 +1,21 @@
 using Microsoft.Extensions.FileProviders;
 using GeoVali;
+using GeoVali.Autostart;
 using GeoVali.Configuration;
 using GeoVali.Startup;
 using GeoVali.Web;
 
 var noBrowser = args.Contains("--no-browser", StringComparer.OrdinalIgnoreCase);
+
+// The copy a UAC prompt starts, when the settings toggle needs rights this process does not have.
+// It registers or removes the logon task and quits — no port, no browser, no dashboard.
+var autostartSwitch = args.FirstOrDefault(AutostartCommand.Handles);
+if (autostartSwitch is not null)
+{
+    return AutostartCommand.Run(autostartSwitch, AutostartFactory.Create(
+        AutostartFactory.CurrentExecutablePath(),
+        AutostartFactory.DefaultStateDirectory()));
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,7 +46,7 @@ if (!isTestHost)
             BrowserLauncher.Open(plan.Url);
         }
 
-        return;
+        return 0;
     }
 
     url = plan.Url;
@@ -65,6 +76,8 @@ if (!isTestHost)
 }
 
 app.Run();
+
+return 0;
 
 /// <summary>Exposed so integration tests can host the app with WebApplicationFactory.</summary>
 public partial class Program;

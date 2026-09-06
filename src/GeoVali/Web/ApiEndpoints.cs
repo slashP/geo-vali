@@ -368,6 +368,28 @@ public static class ApiEndpoints
                 return Results.BadRequest(new { error = $"That folder does not exist: {body.mapsRoot}" });
             }
 
+            // Registering start at login can fail for reasons only the user can resolve — on
+            // Windows it needs one administrator approval — so do it before anything is written.
+            // A switch saved as on while nothing was registered is the one outcome worth avoiding.
+            if (body.startAtLogin is not null)
+            {
+                try
+                {
+                    if (body.startAtLogin.Value)
+                    {
+                        autostart.Enable();
+                    }
+                    else
+                    {
+                        autostart.Disable();
+                    }
+                }
+                catch (AutostartException e)
+                {
+                    return Results.BadRequest(new { error = e.Message });
+                }
+            }
+
             var updated = current with
             {
                 mapsRoot = body.mapsRoot is null ? current.mapsRoot : Path.GetFullPath(body.mapsRoot),
@@ -378,18 +400,6 @@ public static class ApiEndpoints
             };
 
             config.Write(updated);
-
-            if (body.startAtLogin is not null)
-            {
-                if (body.startAtLogin.Value)
-                {
-                    autostart.Enable();
-                }
-                else
-                {
-                    autostart.Disable();
-                }
-            }
 
             return Results.Json(new
             {

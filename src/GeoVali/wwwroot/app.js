@@ -338,6 +338,12 @@ $("settings-save").onclick = async () => {
   } catch (e) {
     message.className = "message error";
     message.textContent = e.message;
+    // A refused start-at-login registers nothing, so do not leave the switch looking as if it did.
+    try {
+      $("set-autostart").checked = (await get("/api/settings")).startAtLogin;
+    } catch {
+      // The message already says what went wrong; a second failure adds nothing.
+    }
   }
 };
 

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using GeoVali.Autostart;
 using GeoVali.Tests.Support;
 using Xunit;
@@ -53,30 +54,6 @@ public class AutostartTests
     }
 
     [Fact]
-    public void Windows_writes_and_removes_a_startup_folder_shortcut()
-    {
-        if (!OperatingSystem.IsWindows())
-        {
-            return; // The .url file it writes is only meaningful on Windows.
-        }
-
-        using var temp = new TempDir();
-        var autostart = new WindowsStartupShortcut(@"C:\Users\perhel\.dotnet\tools\geovali.exe", temp.Path);
-
-        Assert.False(autostart.IsEnabled());
-
-        autostart.Enable();
-
-        var shortcut = Path.Combine(temp.Path, "GeoVali.url");
-        Assert.True(File.Exists(shortcut));
-        Assert.Contains("geovali.exe", File.ReadAllText(shortcut));
-
-        autostart.Disable();
-
-        Assert.False(File.Exists(shortcut));
-    }
-
-    [Fact]
     public void Enable_is_idempotent()
     {
         using var temp = new TempDir();
@@ -101,7 +78,7 @@ public class AutostartTests
     {
         using var temp = new TempDir();
 
-        Assert.Contains("Startup folder", new WindowsStartupShortcut("v", temp.Path).Describe());
+        Assert.Contains("Scheduled Task", TaskAutostart(new FakeSchtasks(), new FakeElevation()).Describe());
         Assert.Contains("LaunchAgent", new MacAutostart("v", temp.Path).Describe());
         Assert.Contains("systemd", new LinuxAutostart("v", temp.Path).Describe());
         Assert.Contains("not supported", new UnsupportedAutostart().Describe());
@@ -125,6 +102,18 @@ public class AutostartTests
         Assert.NotNull(AutostartFactory.Create("geovali", temp.Path));
     }
 
+    [Fact]
+    public void The_factory_registers_a_scheduled_task_on_windows_and_nothing_else()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            return; // The Windows branch of the factory is the only one under test here.
+        }
+
+        using var temp = new TempDir();
+        Assert.IsType<WindowsTaskAutostart>(AutostartFactory.Create("geovali.exe", temp.Path));
+    }
+
     /// <summary>Stands in for schtasks.exe, recording every command line GeoVali builds.</summary>
     private sealed class FakeSchtasks
     {
@@ -140,12 +129,36 @@ public class AutostartTests
         }
     }
 
+    /// <summary>Stands in for the UAC prompt and the elevated copy of GeoVali it starts.</summary>
+    private sealed class FakeElevation(bool elevated = true)
+    {
+        /// <summary>The switch each relaunch was asked to carry.</summary>
+        public List<string> Relaunches { get; } = [];
+
+        /// <summary>What the elevated copy exits with.</summary>
+        public int ExitCode { get; set; }
+
+        /// <summary>Set to make the prompt itself fail, the way a dismissed UAC dialog does.</summary>
+        public Exception? Throws { get; set; }
+
+        public bool IsElevated() => elevated;
+
+        public int Relaunch(string argument)
+        {
+            Relaunches.Add(argument);
+            return Throws is null ? ExitCode : throw Throws;
+        }
+    }
+
+    private static WindowsTaskAutostart TaskAutostart(FakeSchtasks schtasks, FakeElevation elevation) =>
+        new(@"C:\Tools\geovali.exe", schtasks.Run, elevation.IsElevated, elevation.Relaunch);
+
     [Fact]
     public void Windows_task_is_registered_to_run_at_logon_with_no_window_and_no_password()
     {
         var schtasks = new FakeSchtasks();
 
-        new WindowsTaskAutostart(@"C:\Tools\geovali.exe", schtasks.Run).Enable();
+        TaskAutostart(schtasks, new FakeElevation(elevated: true)).Enable();
 
         Assert.Equal(
             ["/create", "/tn", "GeoVali", "/tr", "\"C:\\Tools\\geovali.exe\" --no-browser",
@@ -158,7 +171,7 @@ public class AutostartTests
     {
         var schtasks = new FakeSchtasks();
 
-        var enabled = new WindowsTaskAutostart(@"C:\Tools\geovali.exe", schtasks.Run).IsEnabled();
+        var enabled = TaskAutostart(schtasks, new FakeElevation()).IsEnabled();
 
         Assert.True(enabled);
         Assert.Equal(["/query", "/tn", "GeoVali"], Assert.Single(schtasks.Calls));
@@ -169,7 +182,7 @@ public class AutostartTests
     {
         var schtasks = new FakeSchtasks { ExitCodeByVerb = { ["/query"] = 1 } };
 
-        Assert.False(new WindowsTaskAutostart(@"C:\Tools\geovali.exe", schtasks.Run).IsEnabled());
+        Assert.False(TaskAutostart(schtasks, new FakeElevation()).IsEnabled());
     }
 
     [Fact]
@@ -177,7 +190,7 @@ public class AutostartTests
     {
         var schtasks = new FakeSchtasks();
 
-        new WindowsTaskAutostart(@"C:\Tools\geovali.exe", schtasks.Run).Disable();
+        TaskAutostart(schtasks, new FakeElevation(elevated: true)).Disable();
 
         Assert.Equal(["/delete", "/tn", "GeoVali", "/f"], Assert.Single(schtasks.Calls));
     }
@@ -187,7 +200,7 @@ public class AutostartTests
     {
         var schtasks = new FakeSchtasks { ExitCodeByVerb = { ["/delete"] = 1 } };
 
-        new WindowsTaskAutostart(@"C:\Tools\geovali.exe", schtasks.Run).Disable();
+        TaskAutostart(schtasks, new FakeElevation(elevated: true)).Disable();
     }
 
     [Fact]
@@ -196,53 +209,115 @@ public class AutostartTests
         var schtasks = new FakeSchtasks { ExitCodeByVerb = { ["/create"] = 1 } };
 
         Assert.Throws<AutostartException>(
-            () => new WindowsTaskAutostart(@"C:\Tools\geovali.exe", schtasks.Run).Enable());
+            () => TaskAutostart(schtasks, new FakeElevation(elevated: true)).Enable());
     }
 
     [Fact]
-    public void Windows_prefers_the_scheduled_task_over_a_startup_shortcut()
+    public void Enabling_without_administrator_rights_asks_for_them_instead_of_calling_schtasks()
     {
-        using var temp = new TempDir();
         var schtasks = new FakeSchtasks();
-        var autostart = WindowsAutostartFor(temp, schtasks);
+        var elevation = new FakeElevation(elevated: false);
 
-        autostart.Enable();
+        TaskAutostart(schtasks, elevation).Enable();
 
+        Assert.Equal("--register-autostart", Assert.Single(elevation.Relaunches));
+        Assert.Empty(schtasks.Calls);   // a filtered token cannot register a logon trigger at all
+    }
+
+    [Fact]
+    public void Disabling_without_administrator_rights_asks_for_them_too()
+    {
+        var schtasks = new FakeSchtasks();
+        var elevation = new FakeElevation(elevated: false);
+
+        TaskAutostart(schtasks, elevation).Disable();
+
+        Assert.Equal("--unregister-autostart", Assert.Single(elevation.Relaunches));
+        Assert.Empty(schtasks.Calls);
+    }
+
+    [Fact]
+    public void Declining_the_administrator_prompt_says_so_and_changes_nothing()
+    {
+        var schtasks = new FakeSchtasks();
+        var elevation = new FakeElevation(elevated: false)
+        {
+            Throws = new Win32Exception(1223)   // ERROR_CANCELLED: the UAC dialog was dismissed
+        };
+
+        var error = Assert.Throws<AutostartException>(() => TaskAutostart(schtasks, elevation).Enable());
+
+        Assert.Contains("administrator", error.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(schtasks.Calls);
+    }
+
+    [Fact]
+    public void An_elevated_copy_that_fails_is_reported_rather_than_silently_ignored()
+    {
+        var schtasks = new FakeSchtasks();
+        var elevation = new FakeElevation(elevated: false) { ExitCode = 1 };
+
+        Assert.Throws<AutostartException>(() => TaskAutostart(schtasks, elevation).Enable());
+    }
+
+    [Fact]
+    public void Asking_whether_it_is_enabled_never_needs_administrator_rights()
+    {
+        var schtasks = new FakeSchtasks();
+        var elevation = new FakeElevation(elevated: false);
+
+        Assert.True(TaskAutostart(schtasks, elevation).IsEnabled());
+
+        Assert.Empty(elevation.Relaunches);
+        Assert.Equal(["/query", "/tn", "GeoVali"], Assert.Single(schtasks.Calls));
+    }
+
+    [Fact]
+    public void The_settings_screen_warns_about_the_one_time_administrator_prompt()
+    {
+        var describe = TaskAutostart(new FakeSchtasks(), new FakeElevation()).Describe();
+
+        Assert.Contains("administrator", describe, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void The_elevated_copy_registers_the_task_and_exits_cleanly()
+    {
+        var schtasks = new FakeSchtasks();
+        var autostart = TaskAutostart(schtasks, new FakeElevation(elevated: true));
+
+        var exitCode = AutostartCommand.Run("--register-autostart", autostart);
+
+        Assert.Equal(0, exitCode);
         Assert.Equal("/create", Assert.Single(schtasks.Calls)[0]);
-        Assert.Empty(Directory.GetFiles(temp.Path));
-        Assert.Contains("Scheduled Task", autostart.Describe());
     }
 
     [Fact]
-    public void Windows_falls_back_to_a_startup_shortcut_when_the_task_cannot_be_registered()
+    public void The_elevated_copy_removes_the_task_when_asked_to_unregister()
     {
-        using var temp = new TempDir();
-        var schtasks = new FakeSchtasks { ExitCodeByVerb = { ["/create"] = 1, ["/query"] = 1 } };
-        var autostart = WindowsAutostartFor(temp, schtasks);
+        var schtasks = new FakeSchtasks();
+        var autostart = TaskAutostart(schtasks, new FakeElevation(elevated: true));
 
-        autostart.Enable();
+        var exitCode = AutostartCommand.Run("--unregister-autostart", autostart);
 
-        Assert.True(File.Exists(Path.Combine(temp.Path, "GeoVali.url")));
-        Assert.True(autostart.IsEnabled());
-        Assert.Contains("Startup folder", autostart.Describe());
+        Assert.Equal(0, exitCode);
+        Assert.Equal("/delete", Assert.Single(schtasks.Calls)[0]);
     }
 
     [Fact]
-    public void Windows_disable_clears_both_mechanisms()
+    public void The_elevated_copy_turns_a_failure_into_a_non_zero_exit_code()
     {
-        using var temp = new TempDir();
-        var schtasks = new FakeSchtasks { ExitCodeByVerb = { ["/create"] = 1, ["/query"] = 1 } };
-        var autostart = WindowsAutostartFor(temp, schtasks);
-        autostart.Enable();
+        var schtasks = new FakeSchtasks { ExitCodeByVerb = { ["/create"] = 1 } };
+        var autostart = TaskAutostart(schtasks, new FakeElevation(elevated: true));
 
-        autostart.Disable();
-
-        Assert.Empty(Directory.GetFiles(temp.Path));
-        Assert.Contains(schtasks.Calls, call => call[0] == "/delete");
-        Assert.False(autostart.IsEnabled());
+        Assert.NotEqual(0, AutostartCommand.Run("--register-autostart", autostart));
     }
 
-    private static WindowsAutostart WindowsAutostartFor(TempDir temp, FakeSchtasks schtasks) =>
-        new(new WindowsTaskAutostart(@"C:\Tools\geovali.exe", schtasks.Run),
-            new WindowsStartupShortcut(@"C:\Tools\geovali.exe", temp.Path));
+    [Fact]
+    public void The_autostart_switches_are_recognised_and_ordinary_arguments_are_not()
+    {
+        Assert.True(AutostartCommand.Handles("--register-autostart"));
+        Assert.True(AutostartCommand.Handles("--unregister-autostart"));
+        Assert.False(AutostartCommand.Handles("--no-browser"));
+    }
 }

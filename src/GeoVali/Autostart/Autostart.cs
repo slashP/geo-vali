@@ -2,35 +2,6 @@ using System.Runtime.InteropServices;
 
 namespace GeoVali.Autostart;
 
-/// <summary>Windows: a .url shortcut in the per-user Startup folder. No registry, no admin rights.</summary>
-public sealed class WindowsStartupShortcut(string executablePath, string stateDirectory) : IAutostart
-{
-    private string ShortcutPath => Path.Combine(stateDirectory, "GeoVali.url");
-
-    public bool IsEnabled() => File.Exists(ShortcutPath);
-
-    public void Enable()
-    {
-        Directory.CreateDirectory(stateDirectory);
-        File.WriteAllText(ShortcutPath, $"""
-            [InternetShortcut]
-            URL=file:///{executablePath.Replace('\\', '/')}
-            IconIndex=0
-            """);
-    }
-
-    public void Disable()
-    {
-        if (File.Exists(ShortcutPath))
-        {
-            File.Delete(ShortcutPath);
-        }
-    }
-
-    public string Describe() =>
-        "Adds a shortcut to your Startup folder, so GeoVali runs when you sign in to Windows.";
-}
-
 /// <summary>macOS: a LaunchAgent plist in ~/Library/LaunchAgents.</summary>
 public sealed class MacAutostart(string executablePath, string stateDirectory) : IAutostart
 {
@@ -130,7 +101,9 @@ public static class AutostartFactory
 
         if (OperatingSystem.IsWindows())
         {
-            return Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+            // Windows registers a Scheduled Task and keeps no file of its own; this is only here
+            // so every platform gets an answer.
+            return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         }
 
         if (OperatingSystem.IsMacOS())
@@ -149,9 +122,11 @@ public static class AutostartFactory
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            return new WindowsAutostart(
-                new WindowsTaskAutostart(executablePath, WindowsTaskAutostart.RunSchtasks),
-                new WindowsStartupShortcut(executablePath, stateDirectory));
+            return new WindowsTaskAutostart(
+                executablePath,
+                WindowsTaskAutostart.RunSchtasks,
+                WindowsTaskAutostart.IsRunningElevated,
+                argument => WindowsTaskAutostart.RelaunchElevated(executablePath, argument));
         }
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))

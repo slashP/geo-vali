@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using GeoVali;
+using GeoVali.Autostart;
 using GeoVali.Configuration;
 using GeoVali.Geoguessr;
 using GeoVali.Maps;
@@ -32,7 +33,7 @@ public class ApiEndpointTests : IDisposable
     private string MapsRoot => Path.Combine(_temp.Path, "maps");
 
     /// <summary>Hosts the real app with the two outside-world dependencies replaced.</summary>
-    private HttpClient CreateClient()
+    private HttpClient CreateClient(IAutostart? autostart = null)
     {
         var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
         {
@@ -44,6 +45,12 @@ public class ApiEndpointTests : IDisposable
                 services.RemoveAll<IHostedService>();   // no background scheduler in tests
                 services.AddSingleton<IValiRunner>(Vali);
                 services.AddSingleton<IGeoguessrClient>(Geoguessr);
+
+                if (autostart is not null)
+                {
+                    services.RemoveAll<IAutostart>();
+                    services.AddSingleton(autostart);
+                }
             });
         });
 
@@ -703,4 +710,33 @@ public class ApiEndpointTests : IDisposable
     }
 
     public void Dispose() => _temp.Dispose();
+
+    /// <summary>Start at login that Windows refuses, the way a dismissed UAC prompt does.</summary>
+    private sealed class RefusingAutostart : IAutostart
+    {
+        public const string Refusal =
+            "Windows needs administrator approval to register a task that runs at sign-in, and the " +
+            "prompt was dismissed. Nothing was changed.";
+
+        public bool IsEnabled() => false;
+        public void Enable() => throw new AutostartException(Refusal);
+        public void Disable() { }
+        public string Describe() => "";
+    }
+
+    [Fact]
+    public async Task Start_at_login_that_windows_refuses_is_explained_and_not_saved()
+    {
+        ConfigureMapsRoot();
+        using var client = CreateClient(new RefusingAutostart());
+
+        var response = await client.PostAsJsonAsync("/api/settings", new { startAtLogin = true });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<JsonNode>();
+        Assert.Contains("administrator", body!["error"]!.GetValue<string>(), StringComparison.OrdinalIgnoreCase);
+
+        // The switch must not be left looking on when nothing was registered.
+        Assert.False(new ConfigStore(_temp.Path).Read().startAtLogin);
+    }
 }
