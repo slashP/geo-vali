@@ -102,24 +102,44 @@ days. The cookie never appears in it.
 
 GeoVali only regenerates maps while it is running, so on a machine you use every day it is worth
 letting it start by itself. Settings has a **Start at login** toggle. Turning it on registers GeoVali
-with whatever your operating system uses for this — nothing is installed system-wide, nothing needs
-admin rights, and turning the toggle off undoes it.
+with whatever your operating system uses for this — nothing is installed system-wide, and turning the
+toggle off undoes it. Windows is the one platform that asks for administrator approval, and only
+once, as you flip the switch.
 
 What the toggle does, and what is left for you to do:
 
 **Windows** — registers a Scheduled Task named `GeoVali` that starts it when you sign in. Nothing
 else to do and nothing to keep open: the task runs GeoVali without an interactive window, so you
-never see it unless you go looking. GeoVali runs `schtasks` for you when you flip the toggle — you
-never type it — and turning the toggle off deletes the task again. If you do want to look, it is in
-Task Scheduler under Task Scheduler Library, named GeoVali.
+never see it unless you go looking. If you do want to look, it is in Task Scheduler under Task
+Scheduler Library, named GeoVali.
 
-Two caveats. The task is registered with `/np`, meaning no stored password: GeoVali still reaches
+Windows will not let an ordinary process register anything that triggers at sign-in. `schtasks`
+answers "Access is denied" whether or not you are in the Administrators group, because UAC hands
+your process a filtered token either way. So turning the toggle on raises one UAC prompt, and
+GeoVali runs a second copy of itself elevated for the fraction of a second it takes to register the
+task. Approving that prompt is the whole job: signing in afterwards asks for nothing, and the task
+itself runs unprivileged, as you. Turning the toggle off deletes the task and costs one more prompt.
+Dismissing a prompt changes nothing — the switch stays where it was, and Settings says why.
+
+You never type any of this. If you would rather do it by hand, an elevated terminal (Win+X →
+Terminal (Admin)) and
+
+```cmd
+schtasks /create /tn GeoVali /sc onlogon /np /f /tr "\"C:\path\to\geovali.exe\" --no-browser"
+```
+
+is exactly the command GeoVali runs, and this shows what got registered without signing out:
+
+```cmd
+schtasks /query /tn GeoVali /v /fo LIST
+schtasks /run   /tn GeoVali
+```
+
+One caveat. The task is registered with `/np`, meaning no stored password: GeoVali still reaches
 the internet fine, but it cannot reach a network share that needs authentication, so this is the
-wrong setup if your maps folder lives on a UNC path. And on a machine whose policy refuses to
-register the task, GeoVali falls back to a shortcut in your Startup folder and says so in Settings —
-that fallback does show a console window you have to leave open. If you want GeoVali up before
-anyone signs in, change the task's trigger to At startup by hand; depending on the machine that
-asks for a stored password, which is why GeoVali does not do it for you.
+wrong setup if your maps folder lives on a UNC path. If you want GeoVali up before anyone signs in,
+change the task's trigger to At startup by hand; depending on the machine that asks for a stored
+password, which is why GeoVali does not do it for you.
 
 **macOS** — writes `~/Library/LaunchAgents/com.geovali.agent.plist`. Nothing else to do: GeoVali
 starts at your next login. To start it now without logging out and back in:
