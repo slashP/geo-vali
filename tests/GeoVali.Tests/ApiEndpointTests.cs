@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using GeoVali;
 using GeoVali.Configuration;
 using GeoVali.Geoguessr;
 using GeoVali.Maps;
@@ -91,6 +92,18 @@ public class ApiEndpointTests : IDisposable
         Assert.False(status!["setupComplete"]!.GetValue<bool>());
         Assert.Null(status["mapsRoot"]?.GetValue<string>());
         Assert.Equal(ValiRunner.InstallCommand, status["valiInstallCommand"]!.GetValue<string>());
+    }
+
+    [Fact]
+    public async Task Ping_identifies_the_tool_without_calling_geoguessr()
+    {
+        using var client = CreateClient();
+
+        var ping = await client.GetFromJsonAsync<JsonNode>("/api/ping");
+
+        Assert.Equal(AppInfo.ProductName, ping!["product"]!.GetValue<string>());
+        Assert.Equal(AppInfo.Version, ping["version"]!.GetValue<string>());
+        Assert.Equal(0, Geoguessr.AuthProbeCount);
     }
 
     [Fact]

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace GeoVali.Autostart;
 
 /// <summary>Windows: a .url shortcut in the per-user Startup folder. No registry, no admin rights.</summary>
-public sealed class WindowsAutostart(string executablePath, string stateDirectory) : IAutostart
+public sealed class WindowsStartupShortcut(string executablePath, string stateDirectory) : IAutostart
 {
     private string ShortcutPath => Path.Combine(stateDirectory, "GeoVali.url");
 
@@ -149,7 +149,9 @@ public static class AutostartFactory
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            return new WindowsAutostart(executablePath, stateDirectory);
+            return new WindowsAutostart(
+                new WindowsTaskAutostart(executablePath, WindowsTaskAutostart.RunSchtasks),
+                new WindowsStartupShortcut(executablePath, stateDirectory));
         }
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))

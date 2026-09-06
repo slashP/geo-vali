@@ -20,8 +20,25 @@ var url = "";
 if (!isTestHost)
 {
     var preferred = new ConfigStore(configDirectory).Read().dashboardPort;
-    var port = PortPicker.FindFree(preferred);
-    url = $"http://127.0.0.1:{port}";
+    var plan = await StartupPlan.CreateAsync(preferred, TimeSpan.FromMilliseconds(500));
+
+    // Starting a second copy would mean a second scheduler regenerating and publishing the same
+    // maps. Hand the user over to the one already running instead.
+    if (plan.AlreadyRunning)
+    {
+        Console.WriteLine(noBrowser
+            ? $"{AppInfo.ProductName} is already running at {plan.Url}"
+            : $"{AppInfo.ProductName} is already running — opening {plan.Url}");
+
+        if (!noBrowser)
+        {
+            BrowserLauncher.Open(plan.Url);
+        }
+
+        return;
+    }
+
+    url = plan.Url;
     builder.WebHost.UseUrls(url);
 }
 

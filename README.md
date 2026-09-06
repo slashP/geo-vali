@@ -19,8 +19,9 @@ geovali
 ```
 
 It starts a small web server on your own machine, opens the dashboard in your browser, and keeps
-running until you quit it with Ctrl+C. Use `geovali --no-browser` to start it without opening a
-browser.
+running until you quit it with Ctrl+C. The dashboard is at `http://127.0.0.1:5099`; if that port is
+taken GeoVali walks upwards until it finds a free one and prints the address it settled on. Use
+`geovali --no-browser` to start it without opening a browser.
 
 On first run it asks two things:
 
@@ -51,7 +52,7 @@ map-locations.json
 {
   "id": "6a9d6c505a43d0a64f98be5c",
   "name": "Coastal Sri Lanka",
-  "description": "{{LocationCount}} hand-picked coastal locations.",
+  "description": "{{LocationCount}} coastal locations, regenerated every 10 days.",
   "avatar": {
     "background": "evening",
     "landscape": "skyline",
@@ -99,8 +100,62 @@ days. The cookie never appears in it.
 
 ## Start at login
 
-Settings has a toggle. It writes a Startup-folder shortcut on Windows, a LaunchAgent on macOS, and
-a systemd user unit on Linux. On Linux, activate it with `systemctl --user enable --now geovali`.
+GeoVali only regenerates maps while it is running, so on a machine you use every day it is worth
+letting it start by itself. Settings has a **Start at login** toggle. Turning it on registers GeoVali
+with whatever your operating system uses for this — nothing is installed system-wide, nothing needs
+admin rights, and turning the toggle off undoes it.
+
+What the toggle does, and what is left for you to do:
+
+**Windows** — registers a Scheduled Task named `GeoVali` that starts it when you sign in. Nothing
+else to do and nothing to keep open: the task runs GeoVali without an interactive window, so you
+never see it unless you go looking. GeoVali runs `schtasks` for you when you flip the toggle — you
+never type it — and turning the toggle off deletes the task again. If you do want to look, it is in
+Task Scheduler under Task Scheduler Library, named GeoVali.
+
+Two caveats. The task is registered with `/np`, meaning no stored password: GeoVali still reaches
+the internet fine, but it cannot reach a network share that needs authentication, so this is the
+wrong setup if your maps folder lives on a UNC path. And on a machine whose policy refuses to
+register the task, GeoVali falls back to a shortcut in your Startup folder and says so in Settings —
+that fallback does show a console window you have to leave open. If you want GeoVali up before
+anyone signs in, change the task's trigger to At startup by hand; depending on the machine that
+asks for a stored password, which is why GeoVali does not do it for you.
+
+**macOS** — writes `~/Library/LaunchAgents/com.geovali.agent.plist`. Nothing else to do: GeoVali
+starts at your next login. To start it now without logging out and back in:
+
+```bash
+launchctl load ~/Library/LaunchAgents/com.geovali.agent.plist
+```
+
+launchd runs it in the background: no window, no Terminal, nothing to keep open. Its console output
+is discarded, so the dashboard and `logs/` are the record of what each run did.
+
+**Linux** — writes `~/.config/systemd/user/geovali.service`, and that is *all* it does. The unit sits
+there inert until you run this once:
+
+```bash
+systemctl --user enable --now geovali
+```
+
+After that GeoVali starts with your session, in the background with no terminal attached, and is
+restarted if it crashes. Its console output — the startup banner and web-server messages, not the
+run detail — goes to the journal: `journalctl --user -u geovali -f`. What each run actually did is in
+the dashboard and in `logs/`. To stop it again, run
+`systemctl --user disable --now geovali` — flipping the toggle off deletes the unit file but does not
+stop a service that is already running. On a machine you rarely log into, such as a home server,
+`loginctl enable-linger $USER` keeps it running while nobody is logged in.
+
+**Anything else** — not supported. The toggle stays off and Settings tells you so.
+
+However it is started, GeoVali runs with `--no-browser`, so nothing pops up in your face at login.
+When you do want the dashboard, run `geovali`: it notices the copy already running and opens that
+one in your browser instead of starting a second scheduler beside it.
+
+```console
+$ geovali
+GeoVali is already running — opening http://127.0.0.1:5099
+```
 
 ## What it deliberately does not do
 

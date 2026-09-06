@@ -11,6 +11,14 @@ public static class ApiEndpoints
 {
     public static WebApplication MapGeoValiApi(this WebApplication app)
     {
+        // Cheap identity probe. A starting instance uses it to tell "GeoVali already owns this
+        // port" from "something else does", so /api/status stays free to be the expensive one.
+        app.MapGet("/api/ping", () => Results.Json(new
+        {
+            product = AppInfo.ProductName,
+            version = AppInfo.Version
+        }));
+
         app.MapGet("/api/status", async (
             ConfigStore config,
             CredentialStore credentials,
