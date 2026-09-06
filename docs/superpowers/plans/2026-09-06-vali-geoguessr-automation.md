@@ -109,7 +109,7 @@ tests/GeoVali.Tests/
 - [x] **Step 1: Create the solution and both projects**
 
 ```bash
-cd /home/perhel/vali-geoguessr-automation
+cd /home/perhel/geo-vali
 dotnet new sln -n GeoVali
 dotnet new web -o src/GeoVali -f net10.0
 dotnet new xunit -o tests/GeoVali.Tests -f net10.0
